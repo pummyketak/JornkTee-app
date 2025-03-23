@@ -21,19 +21,6 @@ Route::get('/', function () {
     return redirect()->route('login'); // ถ้ายังไม่ได้ Login ให้ไปหน้า Login
 });
 
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-
-
-
-// Route::middleware('auth')->group(function () {
-//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-//     Route::get('/user', [UserController::class, 'index'])->name('user.dashboard');
-// });
-
 // 📌 Route สำหรับ Admin
 Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/create', [AdminController::class,'create'])->name('create'); // ✅ เปลี่ยนชื่อ route
