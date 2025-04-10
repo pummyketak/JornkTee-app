@@ -6,7 +6,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header" style="font-size: 25px;">{{ __('ตารางแผนผัง') }}</div>
+                <div class="card-header" style="font-size: 25px;">{{ __('ตารางสมาชิก') }}</div>
                 </div>
                 <table class="table table-bordered" style="font-size: 18px;">
                     <thead>

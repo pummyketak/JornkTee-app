@@ -1,5 +1,5 @@
 @extends('layouts.userapp')
-@section('title','ผู้ใช้แลระบบ')
+@section('title','ผู้ใช้ระบบ')
 @section('brand','หน้าหลักผู้เช่าพื้นที่')
 @section('content')
 <div class="container">
