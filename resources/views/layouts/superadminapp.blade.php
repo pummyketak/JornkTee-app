@@ -29,9 +29,17 @@
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav me-auto">
+                    <ul class="navbar-nav">
                         <div class="apply-container">
                             <a class="nav-link" onclick="applyColors()" href="{{route('superadminview')}}" >หน้าหลัก</a>
+                        </div>
+
+                        <div class="apply-container">
+                            <a class="nav-link" onclick="applyColors()" href="{{route('manage_area')}}" >ผังงาน</a>
+                        </div>
+
+                        <div class="apply-container">
+                            <a class="nav-link" onclick="applyColors()" href="{{route('superadmin_create_area_view')}}">สร้าง/แก้ไขแผนผัง</a>
                         </div>
                     </ul>
 
