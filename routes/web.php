@@ -11,17 +11,16 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/', function () {
     if (Auth::check()) {
         if (Auth::user()->type == 2) {
-            // ถ้าเป็น SuperAdmin (type = 2) ให้ redirect ไปยัง route ของ SuperAdmin
             return redirect()->route('superadminview');
         }
         return Auth::user()->type == 1
-            ? redirect()->route('view') // ✅ Admin → ไปที่ route ของ AdminController@index
-            : redirect()->route('userview'); // ✅ User → ไปที่ route ของ UserController@index
+            ? redirect()->route('view')
+            : redirect()->route('userview');
     }
-    return redirect()->route('login'); // ถ้ายังไม่ได้ Login ให้ไปหน้า Login
+    return redirect()->route('login');
 });
 
-// 📌 Route สำหรับ Admin
+//Route สำหรับ Admin
 Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/create', [AdminController::class,'create'])->name('create'); // ✅ เปลี่ยนชื่อ route
     Route::get('/view', [AdminController::class,'view'])->name('view'); // ✅ เปลี่ยนชื่อ route
@@ -37,7 +36,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/admindeleteimage/{id}',[AdminController::class,'admindeleteimage'])->name('admindeleteimage');
 });
 
-// 📌 Route สำหรับ User
+//Route สำหรับ User
 Route::middleware(['auth'])->prefix('user')->group(function () {
     Route::get('/view', [UserController::class, 'userview'])->name('userview');
     Route::post('/booking/{id}', [UserController::class, 'booking'])->name('booking');
@@ -54,7 +53,8 @@ Route::middleware(['auth'])->prefix('superadmin')->group(function () {
     Route::post('/superadmin/promote-to-admin/{id}', [SuperAdminController::class, 'promoteToAdmin'])->name('promoteToAdmin');
     Route::post('/superadmin/rollback-to-user/{id}', [SuperAdminController::class, 'rollbackToUser'])->name('rollbackToUser');
     Route::get('/superadmin/delete-to-user/{id}', [SuperAdminController::class, 'deleteUser'])->name('deleteUser');
-});
+    Route::get('/superadmin/manage_area',[SuperAdminController::class,'manage_area'])->name('manage_area');
+    });
 
 // Auth::routes();
 

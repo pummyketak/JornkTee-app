@@ -13,20 +13,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('storelayouts', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('storemap_id')->constrained('events')->onDelete('cascade');
-            $table->string('areanumber');
-            $table->integer('price');
-            $table->boolean('status')->default(true);
-            $table->text('comment')->nullable();
-            $table->integer('useridbooking');
-            $table->string('nameuserbooking');
-            $table->text('storedetail');
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->boolean('confirmbooking')->default(true);
-            $table->string('image_path')->nullable();
-            $table->timestamps();
+             $table->id(); // คอลัมน์ ID หลัก (Primary Key)
+            $table->string('areanumber'); // หมายเลขพื้นที่
+            $table->integer('price'); // ราคา
+            $table->boolean('status')->default(true); // สถานะ (เปิด/ปิด)
+            $table->text('comment')->nullable(); // หมายเหตุ
+            $table->integer('useridbooking'); // ID ผู้ใช้ที่จอง
+            $table->string('nameuserbooking'); // ชื่อผู้ใช้ที่จอง
+            $table->text('storedetail'); // รายละเอียดร้านค้า
+            $table->date('start_date'); // วันที่เริ่มจอง
+            $table->date('end_date'); // วันที่สิ้นสุดการจอง
+            $table->boolean('confirmbooking')->default(true); // ยืนยันการจอง
+            $table->string('image_path')->nullable(); // ที่อยู่ของรูปภาพ (สามารถเป็น null ได้)
+            $table->timestamps(); // คอลัมน์ created_at และ updated_at
         });
     }
 

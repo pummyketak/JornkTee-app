@@ -73,4 +73,9 @@ class SuperAdminController extends Controller
 
         return redirect()->back()->with('success', 'ลบผู้ใช้สำเร็จ');
     }
+
+    public function manage_area(){
+
+        return view('superadmin_manage_area');
+    }
 }
