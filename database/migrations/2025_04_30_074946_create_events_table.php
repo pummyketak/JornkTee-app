@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // ชื่อแผนผัง เช่น "แผนผังตลาดหน้ามอ"
-            $table->text('description')->nullable(); // คำอธิบายเพิ่มเติม
-            $table->string('image_path')->nullable(); // รูปภาพของแผนผัง
+            $table->string('plan_number'); // ชื่อแผนผัง เช่น "แผนผังตลาดหน้ามอ"
             $table->date('eventstart_date'); // วันที่เริ่มจอง
             $table->date('eventend_date'); // วันที่สิ้นสุดการจอง
+            $table->text('detail')->nullable(); // คำอธิบายเพิ่มเติม
             $table->timestamps();
         });
     }

@@ -22,8 +22,8 @@ Route::get('/', function () {
 
 //Route สำหรับ Admin
 Route::middleware(['auth'])->prefix('admin')->group(function () {
-    Route::get('/create', [AdminController::class,'create'])->name('create'); // ✅ เปลี่ยนชื่อ route
-    Route::get('/view', [AdminController::class,'view'])->name('view'); // ✅ เปลี่ยนชื่อ route
+    Route::get('/create', [AdminController::class,'create'])->name('create');
+    Route::get('/view', [AdminController::class,'view'])->name('view');
     Route::post('/insert',[AdminController::class,'insert'])->name('insert');
     Route::get('/delete/{id}', [AdminController::class,'delete'])->name('delete');
     Route::get('/change/{id}', [AdminController::class,'change'])->name('change');
@@ -54,6 +54,7 @@ Route::middleware(['auth'])->prefix('superadmin')->group(function () {
     Route::post('/superadmin/rollback-to-user/{id}', [SuperAdminController::class, 'rollbackToUser'])->name('rollbackToUser');
     Route::get('/superadmin/delete-to-user/{id}', [SuperAdminController::class, 'deleteUser'])->name('deleteUser');
     Route::get('/superadmin/manage_area',[SuperAdminController::class,'manage_area'])->name('manage_area');
+    Route::post('/superadmin/create_event', [SuperAdminController::class, 'createEvent'])->name('createEvent');
     });
 
 // Auth::routes();

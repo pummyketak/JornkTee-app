@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\event;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
 class SuperAdminController extends Controller
@@ -75,7 +77,39 @@ class SuperAdminController extends Controller
     }
 
     public function manage_area(){
+        $events = event::all();
+        return view('superadmin_manage_area', compact('events'));
+    }
 
-        return view('superadmin_manage_area');
+    public function createEvent(Request $request)
+    {
+        $validator = Validator::make($request->all(),
+        [
+            'plan_number' => 'required',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'detail' => 'nullable|string|max:255',
+        ],
+        [
+            'plan_number.required' => '***กรุณาใส่หมายเลขผังงาน',
+            'start_date.required' => '***กรุณาใส่วันที่เริ่มต้น',
+            'end_date.required' => '***กรุณาใส่วันที่สิ้นสุด',
+            'end_date.after_or_equal' => '***วันที่สิ้นสุดต้องมากกว่าหรือเท่ากับวันที่เริ่มต้น',
+            'detail.string' => '***รายละเอียดต้องเป็นข้อความ',
+        ]);
+        if ($validator->fails()) {
+            return redirect('/superadmin/manage_area')
+                        ->withErrors($validator)
+                        ->withInput();
+        }
+
+        $data = [
+            'plan_number' => $request->plan_number,
+            'eventstart_date' => $request->start_date,
+            'eventend_date' => $request->end_date,
+            'detail' => '',
+        ];
+        event::insert($data);
+        return view('superadmin_manage_area')->with('success', 'สร้างผังงานสำเร็จ');
     }
 }

@@ -10,7 +10,7 @@ class event extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'image_path','eventstart_date', 'eventend_date'];
+    protected $fillable = ['plan_number', 'eventstart_date', 'eventend_date', 'detail'];
 
     public function storelayouts(): HasMany
     {
