@@ -22,7 +22,7 @@
                                 <label for="eventstart_date" style="font-size: 20px;">วันที่จัดงาน:</label>
                                 <input type="date" name="eventstart_date" class="form-control">
                             </div>
-                            @error('evenstart_date')
+                            @error('eventstart_date')
                             <div>
                                 <span class="text-danger">{{$message}}</span>
                             </div>
@@ -43,7 +43,30 @@
 
                             <input type="submit" value="บันทึก" class="btn btn-primary my-3 ">
                         </form>
-
+                        <thead>
+                            <tr>
+                                <th>รหัสผังงาน</th>
+                                <th>วันที่เริ่มต้น-วันที่สิ้นสุด</th>
+                                <th>รายละเอียด</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($events as $event)
+                                <tr>
+                                    <td>{{ $event->plan_number }}</td>
+                                    <td>
+                                        {{ \Carbon\Carbon::parse($event->eventstart_date)->format('d/m/Y') }} -
+                                        {{ \Carbon\Carbon::parse($event->eventend_date)->format('d/m/Y') }}
+                                    </td>
+                                    <td>{{ $event->detail }}</td>
+                                    <td>
+                                        <a href="" class="btn btn-warning">แก้ไข</a>
+                                        <a href="{{route('deleteEvent', $event->id) }}" class="btn btn-danger" onclick="return confirm('คุณต้องการลบผังงานนี้หรือไม่?')">ลบ</a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
                 </table>
             </div>
         </div>

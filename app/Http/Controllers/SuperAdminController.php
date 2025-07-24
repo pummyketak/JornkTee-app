@@ -86,15 +86,15 @@ class SuperAdminController extends Controller
         $validator = Validator::make($request->all(),
         [
             'plan_number' => 'required',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
+            'eventstart_date' => 'required|date',
+            'eventend_date' => 'required|date|after_or_equal:start_date',
             'detail' => 'nullable|string|max:255',
         ],
         [
             'plan_number.required' => '***กรุณาใส่หมายเลขผังงาน',
-            'start_date.required' => '***กรุณาใส่วันที่เริ่มต้น',
-            'end_date.required' => '***กรุณาใส่วันที่สิ้นสุด',
-            'end_date.after_or_equal' => '***วันที่สิ้นสุดต้องมากกว่าหรือเท่ากับวันที่เริ่มต้น',
+            'eventstart_date.required' => '***กรุณาใส่วันที่เริ่มต้น',
+            'eventend_date.required' => '***กรุณาใส่วันที่สิ้นสุด',
+            'eventend_date.after_or_equal' => '***วันที่สิ้นสุดต้องมากกว่าหรือเท่ากับวันที่เริ่มต้น',
             'detail.string' => '***รายละเอียดต้องเป็นข้อความ',
         ]);
         if ($validator->fails()) {
@@ -105,11 +105,22 @@ class SuperAdminController extends Controller
 
         $data = [
             'plan_number' => $request->plan_number,
-            'eventstart_date' => $request->start_date,
-            'eventend_date' => $request->end_date,
-            'detail' => '',
+            'eventstart_date' => $request->eventstart_date,
+            'eventend_date' => $request->eventend_date,
+            'detail' => $request->detail ?? '',
         ];
         event::insert($data);
-        return view('superadmin_manage_area')->with('success', 'สร้างผังงานสำเร็จ');
+        return redirect('/superadmin/manage_area')->with('success', 'สร้างผังงานสำเร็จ');
+    }
+
+    public function deleteEvent($id)
+    {   $user = Auth::user();
+        if ($user->type !== 2) {
+            return redirect()->back()->with('error', 'คุณไม่มีสิทธิ์ดำเนินการนี้');
+        }
+
+        $event = event::findOrFail($id);
+        $event->delete();
+        return redirect()->back()->with('success', 'ลบผังงานสำเร็จ');
     }
 }

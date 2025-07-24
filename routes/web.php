@@ -50,13 +50,13 @@ Route::middleware(['auth'])->prefix('user')->group(function () {
 
 Route::middleware(['auth'])->prefix('superadmin')->group(function () {
     Route::get('/view', [SuperAdminController::class, 'view'])->name('superadminview');
-    Route::post('/superadmin/promote-to-admin/{id}', [SuperAdminController::class, 'promoteToAdmin'])->name('promoteToAdmin');
-    Route::post('/superadmin/rollback-to-user/{id}', [SuperAdminController::class, 'rollbackToUser'])->name('rollbackToUser');
-    Route::get('/superadmin/delete-to-user/{id}', [SuperAdminController::class, 'deleteUser'])->name('deleteUser');
-    Route::get('/superadmin/manage_area',[SuperAdminController::class,'manage_area'])->name('manage_area');
-    Route::post('/superadmin/create_event', [SuperAdminController::class, 'createEvent'])->name('createEvent');
-    });
-
+    Route::post('/promote-to-admin/{id}', [SuperAdminController::class, 'promoteToAdmin'])->name('promoteToAdmin');
+    Route::post('/rollback-to-user/{id}', [SuperAdminController::class, 'rollbackToUser'])->name('rollbackToUser');
+    Route::get('/delete-to-user/{id}', [SuperAdminController::class, 'deleteUser'])->name('deleteUser');
+    Route::get('/manage_area',[SuperAdminController::class,'manage_area'])->name('manage_area');
+    Route::post('/create_event', [SuperAdminController::class, 'createEvent'])->name('createEvent');
+    Route::get('/delete_event/{id}',[SuperAdminController::class,'deleteEvent'])->name('deleteEvent');
+});
 // Auth::routes();
 
 require __DIR__.'/auth.php';
