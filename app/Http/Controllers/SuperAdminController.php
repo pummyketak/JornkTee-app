@@ -87,7 +87,7 @@ class SuperAdminController extends Controller
         [
             'plan_number' => 'required',
             'eventstart_date' => 'required|date',
-            'eventend_date' => 'required|date|after_or_equal:start_date',
+            'eventend_date' => 'required|date|after_or_equal:eventstart_date',
             'detail' => 'nullable|string|max:255',
         ],
         [
@@ -122,5 +122,39 @@ class SuperAdminController extends Controller
         $event = event::findOrFail($id);
         $event->delete();
         return redirect()->back()->with('success', 'ลบผังงานสำเร็จ');
+    }
+
+    public function editEvent($id)
+    {
+        $event = event::find($id);
+        return view('superadmin_edit_area', compact('event'));
+    }
+
+    public function updateEvent(Request $request, $id)
+    {
+        $request->validate(
+        [
+            'plan_number' => 'required',
+            'eventstart_date' => 'required|date',
+            'eventend_date' => 'required|date|after_or_equal:eventstart_date',
+            'detail' => 'nullable|string|max:255',
+        ],
+        [
+            'plan_number.required' => '***กรุณาใส่หมายเลขผังงาน',
+            'eventstart_date.required' => '***กรุณาใส่วันที่เริ่มต้น',
+            'eventend_date.required' => '***กรุณาใส่วันที่สิ้นสุด',
+            'eventend_date.after_or_equal' => '***วันที่สิ้นสุดต้องมากกว่าหรือเท่ากับวันที่เริ่มต้น',
+            'detail.string' => '***รายละเอียดต้องเป็นข้อความ',
+        ]
+        );
+
+        $data = [
+            'plan_number' => $request->plan_number,
+            'eventstart_date' => $request->eventstart_date,
+            'eventend_date' => $request->eventend_date,
+            'detail' => $request->detail ?? '',
+        ];
+        event::findOrFail($id)->update($data);
+        return redirect('/superadmin/manage_area')->with('success', 'อัปเดตผังงานสำเร็จ');
     }
 }
