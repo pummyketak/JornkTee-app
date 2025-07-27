@@ -7,7 +7,9 @@ use App\Models\Storelayout;
 use App\Models\User;
 use App\Models\Bankaccount;
 use App\Models\Image;
+use App\Models\event;
 use Illuminate\Support\Facades\Validator;
+
 
 class AdminController extends Controller
 {
@@ -35,8 +37,9 @@ class AdminController extends Controller
     {
         $storelayout=Storelayout::orderBy('areanumber')->get();
         $Bankaccount=Bankaccount::get();
+        $events = event::all();
         $Image=Image::get();
-        return view('view',compact('storelayout','Bankaccount','Image'));
+        return view('view',compact('storelayout','Bankaccount','events','Image'));
     }
 
     public function insert(REquest $request)

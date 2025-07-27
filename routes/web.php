@@ -58,6 +58,7 @@ Route::middleware(['auth'])->prefix('superadmin')->group(function () {
     Route::get('/delete_event/{id}',[SuperAdminController::class,'deleteEvent'])->name('deleteEvent');
     Route::get('/edit_event/{id}',[SuperAdminController::class,'editEvent'])->name('editEvent');
     Route::post('/update_event/{id}',[SuperAdminController::class,'updateEvent'])->name('updateEvent');
+    Route::get('/eventpage/{id}', [SuperAdminController::class, 'eventpage'])->name('eventpage');
 });
 // Auth::routes();
 

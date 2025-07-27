@@ -155,6 +155,11 @@ class SuperAdminController extends Controller
             'detail' => $request->detail ?? '',
         ];
         event::findOrFail($id)->update($data);
-        return redirect('/superadmin/manage_area')->with('success', 'อัปเดตผังงานสำเร็จ');
+        return redirect()->route('eventpage', $id)->with('success', 'อัปเดตผังงานสำเร็จ');
+    }
+
+    public function eventpage($id){
+        $event = event::find($id);
+        return view('superadmin_event_page', compact('event'));
     }
 }

@@ -41,7 +41,7 @@
                         <textarea name="detail" class="form-control">{{ $event->detail }}</textarea>
                     </div>
                     <input type="submit" value="อัพเดท" class="btn btn-primary my-3">
-                    <a href="{{ route('manage_area') }}" class="btn btn-danger" onclick="return confirm('คุณต้องการยกเลิกการอัพเดทข้อมูลผังงานใช่หรือไม่ ?')">ยกเลิก</a>
+                    <a href="{{ route('eventpage',$event->id) }}" class="btn btn-danger" onclick="return confirm('คุณต้องการยกเลิกการอัพเดทข้อมูลผังงานใช่หรือไม่ ?')">ยกเลิก</a>
                 </form>
             </div>
         </div>

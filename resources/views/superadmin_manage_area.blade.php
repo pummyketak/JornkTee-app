@@ -61,7 +61,11 @@
                                     </td>
                                     <td>{{ $event->detail }}</td>
                                     <td>
-                                        <a href="{{route('editEvent', $event->id) }}" class="btn btn-warning">แก้ไข</a>
+                                        {{--Debug: แสดง URL ที่สร้างขึ้น--}}
+                                        <p>URL: {{ route('eventpage', $event->id) }}</p>
+                                        <p>Event ID: {{ $event->id }}</p>
+                                        <a href="{{route('eventpage', $event->id) }}" class="btn btn-warning">รายละเอียดผังงาน</a>
+                                        {{-- <a href="{{route('editEvent', $event->id) }}" class="btn btn-warning">แก้ไข</a> --}}
                                         <a href="{{route('deleteEvent', $event->id) }}" class="btn btn-danger" onclick="return confirm('คุณต้องการลบผังงานนี้หรือไม่?')">ลบ</a>
                                     </td>
                                 </tr>
