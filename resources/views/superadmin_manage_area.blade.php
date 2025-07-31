@@ -40,6 +40,22 @@
                                 <label for="detail">รายละเอียดผังงาน</label>
                                 <textarea name="detail" class="form-control"> </textarea>
                             </div>
+                            {{-- <div>
+                                <label for="admin_id">เลือก Admin ที่ดูแล</label>
+                                <select name="admin_id" class="form-control">
+                                    <option value="">-- เลือก Admin --</option>
+                                    @foreach($admins as $admin)
+                                        <option value="{{ $admin->id }}" {{ old('admin_id') == $admin->id ? 'selected' : '' }}>
+                                            {{ $admin->name }} ({{ $admin->email }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @error('admin_id')
+                        <div>
+                            <span class="text-danger">{{$message}}</span>
+                        </div>
+                        @enderror --}}
 
                             <input type="submit" value="บันทึก" class="btn btn-primary my-3 ">
                         </form>

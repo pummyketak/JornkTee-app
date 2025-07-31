@@ -10,6 +10,6 @@ class Bankaccount extends Model
     use HasFactory;
 
     protected $fillable = [
-        'bankaccount', // หากมีคอลัมน์อื่น เช่น 'bank_name', 'account_name', 'account_number' ควรเพิ่มที่นี่ด้วย
+        'bankaccount',
     ];
 }

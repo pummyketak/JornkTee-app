@@ -78,6 +78,7 @@ class SuperAdminController extends Controller
 
     public function manage_area(){
         $events = event::all();
+        $admins = User::where('type', 1)->get();
         return view('superadmin_manage_area', compact('events'));
     }
 

@@ -55,7 +55,28 @@ class User extends Authenticatable
     }
 
     public function isSuperAdmin()
-{
-    return $this->type === 2; // เฉพาะ Super Admin เท่านั้น
-}
+    {
+        return $this->type === 2; // เฉพาะ Super Admin เท่านั้น
+    }
+
+    public function scopeAdmins($query)
+    {
+        return $query->where('type', 1); // Filter สำหรับผู้ใช้ที่เป็น Admin
+    }
+
+    public function scopeSuperAdmins($query)
+    {
+        return $query->where('type', 2); // Filter สำหรับผู้ใช้ที่เป็น Super Admin
+    }
+
+    public function scopeRegularUsers($query)
+    {
+        return $query->where('type', 0); // Filter สำหรับผู้ใช้ที่เป็น User ปกติ
+    }
+
+     public function managedEvents()
+    {
+        return $this->hasMany(Event::class, 'admin_id'); // Assuming 'admin_id' is the foreign key in the events table
+    }
+
 }
