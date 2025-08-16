@@ -79,7 +79,7 @@ class SuperAdminController extends Controller
     public function manage_area(){
         $events = event::all();
         $admins = User::where('type', 1)->get();
-        return view('superadmin_manage_area', compact('events'));
+        return view('superadmin_manage_area', compact('events', 'admins'));
     }
 
     public function createEvent(Request $request)
@@ -90,6 +90,7 @@ class SuperAdminController extends Controller
             'eventstart_date' => 'required|date',
             'eventend_date' => 'required|date|after_or_equal:eventstart_date',
             'detail' => 'nullable|string|max:255',
+            // 'admin_id' => 'required|exists:users,id',
         ],
         [
             'plan_number.required' => '***กรุณาใส่หมายเลขผังงาน',
@@ -97,6 +98,7 @@ class SuperAdminController extends Controller
             'eventend_date.required' => '***กรุณาใส่วันที่สิ้นสุด',
             'eventend_date.after_or_equal' => '***วันที่สิ้นสุดต้องมากกว่าหรือเท่ากับวันที่เริ่มต้น',
             'detail.string' => '***รายละเอียดต้องเป็นข้อความ',
+            // 'admin_id.required' => '***กรุณาเลือก Admin ที่ดูแล',
         ]);
         if ($validator->fails()) {
             return redirect('/superadmin/manage_area')
@@ -109,6 +111,7 @@ class SuperAdminController extends Controller
             'eventstart_date' => $request->eventstart_date,
             'eventend_date' => $request->eventend_date,
             'detail' => $request->detail ?? '',
+            // 'admin_id' => $request->admin_id,
         ];
         event::insert($data);
         return redirect('/superadmin/manage_area')->with('success', 'สร้างผังงานสำเร็จ');

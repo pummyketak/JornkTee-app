@@ -23,5 +23,11 @@ class Storelayout extends Model
         'end_date',
         'confirmbooking',
         'image_path',
+        'event_id',
     ];
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
 }

@@ -13,4 +13,13 @@ class event extends Model
         'plan_number', 'eventstart_date', 'eventend_date', 'detail'
     ];
 
+    public function storelayouts()
+    {
+        return $this->hasMany(Storelayout::class);
+    }
+
+    public function admins()
+    {
+        return $this->belongsToMany(User::class, 'event_admins', 'event_id', 'admin_id');
+    }
 }

@@ -40,22 +40,22 @@
                                 <label for="detail">รายละเอียดผังงาน</label>
                                 <textarea name="detail" class="form-control"> </textarea>
                             </div>
-                            {{-- <div>
-                                <label for="admin_id">เลือก Admin ที่ดูแล</label>
-                                <select name="admin_id" class="form-control">
-                                    <option value="">-- เลือก Admin --</option>
+                            <div>
+                                <label for="admin_ids">เลือก Admin ที่ดูแล</label>
+                                <select name="admin_ids[]" class="form-control" multiple required>
+                                    <option value="" disabled>-- เลือก Admin ดูแล Event --</option>
                                     @foreach($admins as $admin)
-                                        <option value="{{ $admin->id }}" {{ old('admin_id') == $admin->id ? 'selected' : '' }}>
+                                        <option value="{{ $admin->id }}" {{ in_array($admin->id, old('admin_ids', [])) ? 'selected' : '' }}>
                                             {{ $admin->name }} ({{ $admin->email }})
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
-                        @error('admin_id')
+                        @error('admin_ids')
                         <div>
                             <span class="text-danger">{{$message}}</span>
                         </div>
-                        @enderror --}}
+                        @enderror
 
                             <input type="submit" value="บันทึก" class="btn btn-primary my-3 ">
                         </form>
@@ -78,8 +78,8 @@
                                     <td>{{ $event->detail }}</td>
                                     <td>
                                         {{--Debug: แสดง URL ที่สร้างขึ้น--}}
-                                        <p>URL: {{ route('eventpage', $event->id) }}</p>
-                                        <p>Event ID: {{ $event->id }}</p>
+                                        {{-- <p>URL: {{ route('eventpage', $event->id) }}</p>
+                                        <p>Event ID: {{ $event->id }}</p> --}}
                                         <a href="{{route('eventpage', $event->id) }}" class="btn btn-warning">รายละเอียดผังงาน</a>
                                         {{-- <a href="{{route('editEvent', $event->id) }}" class="btn btn-warning">แก้ไข</a> --}}
                                         <a href="{{route('deleteEvent', $event->id) }}" class="btn btn-danger" onclick="return confirm('คุณต้องการลบผังงานนี้หรือไม่?')">ลบ</a>
