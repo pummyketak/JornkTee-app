@@ -7,8 +7,9 @@ use App\Models\Storelayout;
 use App\Models\User;
 use App\Models\Bankaccount;
 use App\Models\Image;
-use App\Models\event;
+use App\Models\Event;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 
 class AdminController extends Controller
@@ -42,8 +43,12 @@ class AdminController extends Controller
         return view('view',compact('storelayout','Bankaccount','events','Image'));
     }
 
-    public function insert(REquest $request)
+    public function insert(REquest $request, $eventId)
     {
+        $event = dd(Auth::user()->managedEvents()->find($eventId));
+        if (!$event) {
+            return redirect()->back()->with('error', 'คุณไม่มีสิทธิ์จัดการ Event นี้');
+        }
         $validator = Validator::make($request->all(),
             [
                 'areanumber'=>'required',
@@ -212,6 +217,13 @@ class AdminController extends Controller
         // ลบข้อมูลของภาพจากฐานข้อมูล
         $image->delete();
         return redirect()->back()->with('success', 'ลบรูปภาพสำเร็จ');
+    }
+
+    public function myEvents()
+    {
+        $events = Auth::user()->events; // Assuming a many-to-many relationship between User and Event
+        return view('admin.events', compact('events'));
+
     }
 
 }

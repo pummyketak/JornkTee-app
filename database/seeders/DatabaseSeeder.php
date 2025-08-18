@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             SuperAdminSeeder::class,
+            AdminSeeder::class,
             // User::factory()->create([  // ลบหรือคอมเมนต์บรรทัดนี้
             //     'name' => 'Test User',
             //     'email' => 'test@example.com',

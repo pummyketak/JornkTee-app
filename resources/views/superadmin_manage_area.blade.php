@@ -41,17 +41,14 @@
                                 <textarea name="detail" class="form-control"> </textarea>
                             </div>
                             <div>
-                                <label for="admin_ids">เลือก Admin ที่ดูแล</label>
-                                <select name="admin_ids[]" class="form-control" multiple required>
-                                    <option value="" disabled>-- เลือก Admin ดูแล Event --</option>
+                                <label for="admin_id">เลือก Admin ที่ดูแล</label>
+                                <select name="admin_id" class="form-control">
                                     @foreach($admins as $admin)
-                                        <option value="{{ $admin->id }}" {{ in_array($admin->id, old('admin_ids', [])) ? 'selected' : '' }}>
-                                            {{ $admin->name }} ({{ $admin->email }})
-                                        </option>
+                                        <option value="{{ $admin->id }}">{{ $admin->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                        @error('admin_ids')
+                        @error('admin_id')
                         <div>
                             <span class="text-danger">{{$message}}</span>
                         </div>

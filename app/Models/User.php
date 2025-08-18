@@ -63,6 +63,8 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Event::class, 'event_admins', 'admin_id', 'event_id');
     }
+
+
     // public function scopeAdmins($query)
     // {
     //     return $query->where('type', 1); // Filter สำหรับผู้ใช้ที่เป็น Admin
