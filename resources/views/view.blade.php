@@ -6,15 +6,15 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header" style="font-size: 25px;">{{ __('ตารางแผนผัง') }}</div>
-                 <div class="text-center">
+                <div class="card-header text-center" style="font-size: 25px;">{{ __('ผังงาน') }}</div>
+                 {{-- <div class="text-center">
                     <h4>รูปแผนผัง</h4>
                     @foreach ($Image as $item)
                         <img src="{{ asset($item->image_path) }}" alt="Image" style="max-width: 70%; height: auto;">
                     @endforeach
-                </div>
-                <table class="table table-bordered" style="font-size: 18px;">
-                    <thead>
+                </div> --}}
+                {{-- <table class="table table-bordered" style="font-size: 18px;"> --}}
+                    {{-- <thead>
                         <tr>
                             <th scope="col">หมายเลขล็อค</th>
                             <th scope="col">เวลาจัดงาน</th>
@@ -56,7 +56,7 @@
                             @endforeach
                         </tr>
                     </table>
-                </div>
+                </div> --}}
                 <div>
                     <table class="table table-bordered" style="font-size: 18px;">
                         <thead>
@@ -77,8 +77,8 @@
                                     </td>
                                     <td>{{ $event->detail }}</td>
                                     <td>
-                                        <a href="" class="btn btn-warning">แก้ไข</a>
-                                        <a href="" class="btn btn-danger" onclick="return confirm('คุณต้องการลบผังงานนี้หรือไม่?')">ลบ</a>
+                                        <a href="{{route('create')}}" class="btn btn-warning">ดูรายละเอียด</a>
+                                        {{-- <a href="" class="btn btn-danger" onclick="return confirm('คุณต้องการลบผังงานนี้หรือไม่?')">ลบ</a> --}}
                                     </td>
                                 </tr>
                             @endforeach

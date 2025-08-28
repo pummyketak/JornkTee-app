@@ -40,6 +40,16 @@
                         <label for="detail" style="font-size: 20px;">รายละเอียดผังงาน</label>
                         <textarea name="detail" class="form-control">{{ $event->detail }}</textarea>
                     </div>
+                    <div class="form-group">
+                        <label for="admins">Assign Admins</label>
+                        <select name="admins[]" id="admins" class="form-control" multiple>
+                            @foreach($allAdmins as $admin)
+                                <option value="{{ $admin->id }}" @if(in_array($admin->id, $assignedAdmins)) selected @endif>
+                                    {{ $admin->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                     <input type="submit" value="อัพเดท" class="btn btn-primary my-3">
                     <a href="{{ route('eventpage',$event->id) }}" class="btn btn-danger" onclick="return confirm('คุณต้องการยกเลิกการอัพเดทข้อมูลผังงานใช่หรือไม่ ?')">ยกเลิก</a>
                 </form>

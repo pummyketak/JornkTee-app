@@ -45,7 +45,7 @@ class AdminController extends Controller
 
     public function insert(REquest $request, $eventId)
     {
-        $event = dd(Auth::user()->managedEvents()->find($eventId));
+        $event = Auth::user()->manageEvents()->find($eventId);
         if (!$event) {
             return redirect()->back()->with('error', 'คุณไม่มีสิทธิ์จัดการ Event นี้');
         }
@@ -71,6 +71,7 @@ class AdminController extends Controller
                         ->withInput();
         }
 
+        // สร้าง Storelayout พร้อมเชื่อมโยงกับ Event
         $data=[
             'areanumber'=>$request->areanumber,
             'price'=>$request->price,
@@ -80,9 +81,10 @@ class AdminController extends Controller
             'storedetail'=> '',
             'start_date'=>$request->start_date,
             'end_date'=>$request->end_date,
+            'event_id' => $eventId,
         ];
         Storelayout::insert($data);
-        return redirect('/admin/create')->with('success', 'ข้อมูลถูกเพิ่มเรียบร้อยแล้ว');
+        return redirect('/admin/create')->with('success', 'ข้อมูลล็อคถูกเพิ่มเรียบร้อยแล้ว');
     }
 
     public function delete($id)

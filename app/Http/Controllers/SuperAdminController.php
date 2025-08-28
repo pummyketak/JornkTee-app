@@ -90,7 +90,8 @@ class SuperAdminController extends Controller
             'eventstart_date' => 'required|date',
             'eventend_date' => 'required|date|after_or_equal:eventstart_date',
             'detail' => 'nullable|string|max:255',
-            'admin_id' => 'required|exists:users,id',
+            'admin_ids' => 'required|array', // รับข้อมูล Admin IDs
+            'admin_ids.*' => 'exists:users,id', // ตรวจสอบว่า Admin IDs มีอยู่ในตาราง users
         ],
         [
             'plan_number.required' => '***กรุณาใส่หมายเลขผังงาน',
@@ -98,34 +99,35 @@ class SuperAdminController extends Controller
             'eventend_date.required' => '***กรุณาใส่วันที่สิ้นสุด',
             'eventend_date.after_or_equal' => '***วันที่สิ้นสุดต้องมากกว่าหรือเท่ากับวันที่เริ่มต้น',
             'detail.string' => '***รายละเอียดต้องเป็นข้อความ',
-            'admin_id.required' => '***กรุณาเลือก Admin ที่ดูแล',
+            'admin_ids.required' => '***กรุณาเลือก Admin ที่ดูแล',
+            'admin_ids.*.exists' => '***Admin ที่เลือกไม่มีอยู่ในระบบ',
         ]);
         if ($validator->fails()) {
-            return redirect('/superadmin/manage_area')->withErrors($validator)->withInput();
+            return redirect('/superadmin/manage_area')
+                        ->withErrors($validator)
+                        ->withInput();
         }
 
-        $event = event::create([
-            'plan_number' => $request->plan_number,
-            'eventstart_date' => $request->eventstart_date,
-            'eventend_date' => $request->eventend_date,
-            'detail' => $request->detail ?? '',
-        ]);
-        $event::admins()->attach($request->admin_id); // มอบหมาย Admin ให้กับผังงาน
-        return redirect('/superadmin/manage_area')->with('success', 'สร้างผังงานสำเร็จ');
-    }
+        // สร้าง Event
+    $event = Event::create([
+        'plan_number' => $request->plan_number,
+        'eventstart_date' => $request->eventstart_date,
+        'eventend_date' => $request->eventend_date,
+        'detail' => $request->detail ?? '',
+    ]);
+    $event->admins()->sync($request->admin_ids);
+    return redirect('/superadmin/manage_area')->with('success', 'สร้างผังงานสำเร็จ');
+}
 
     public function deleteEvent($id)
-    {
-        $user = Auth::user();
+    {   $user = Auth::user();
         if ($user->type !== 2) {
             return redirect()->back()->with('error', 'คุณไม่มีสิทธิ์ดำเนินการนี้');
         }
 
         $event = event::findOrFail($id);
-        $event->admins()->detach(); // ลบการมอบหมาย Admin ก่อนลบผังงาน
-        $event->storelayouts()->delete(); // ลบผังงานที่เกี่ยวข้อง
         $event->delete();
-        return redirect()->back()->with('success', 'ลบ Event และยกเลิกการแต่งตั้ง Admin สำเร็จ');
+        return redirect()->back()->with('success', 'ลบผังงานสำเร็จ');
     }
 
     public function editEvent($id)
@@ -163,28 +165,39 @@ class SuperAdminController extends Controller
     }
 
     public function eventpage($id){
-        $event = event::find($id);
-        return view('superadmin_event_page', compact('event'));
+        $event = Event::findOrFail($id);
+        $admins = $event->admins;
+        return view('superadmin_event_page', compact('event', 'admins'));
     }
 
-    public function assignAdminToEvent(Request $request, $eventId)
+    public function addAdminToEvent(Request $request, $id)
     {
-        $user = Auth::user();
+        $request->validate([
+            'admin_id' => 'required|exists:users,id', // ตรวจสอบว่า admin_id มีอยู่ในระบบ
+        ]);
 
-        if ($user->type !== 2) {
-            return redirect()->back()->with('error', 'คุณไม่มีสิทธิ์ดำเนินการนี้');
+        $event = Event::findOrFail($id);
+
+        // ป้องกันการเพิ่ม Admin ซ้ำ
+        if ($event->admins()->where('id', $request->admin_id)->exists()) {
+            return redirect()->back()->with('error', 'Admin นี้ถูกเพิ่มใน Event แล้ว');
         }
+        $event->admins()->attach($request->admin_id);
+        return redirect()->back()->with('success', 'เพิ่ม Admin สำเร็จ');
+    }
 
-        $event = event::findOrFail($eventId);
-        $adminId = $request->input('admin_id');
+    public function removeAdminFromEvent(Request $request, $id)
+    {
+        $request->validate([
+            'admin_id' => 'required|exists:users,id', // ตรวจสอบว่า admin_id มีอยู่ในระบบ
+        ]);
 
-        $admin = User::where('id', $adminId)->where('type', 1)->first();
-        if (!$admin) {
-            return redirect()->back()->with('error', 'กรุณาเลือก Admin ที่ต้องการมอบหมาย');
+        $event = Event::findOrFail($id);
+
+        if (!$event->admins()->where('id', $request->admin_id)->exists()) {
+            return redirect()->back()->with('error', 'Admin นี้ไม่ได้ดูแล Event นี้');
         }
-
-        $event->admins()->attach($adminId); // มอบหมาย Admin ให้กับผังงาน
-
-        return redirect()->back()->with('success', 'มอบหมาย Admin ให้กับผังงานสำเร็จ');
+        $event->admins()->detach($request->admin_id);
+        return redirect()->back()->with('success', 'ลบ Admin สำเร็จ');
     }
 }

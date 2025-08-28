@@ -4,8 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Storelayout;
+use App\Models\User;
 
-class event extends Model
+
+class Event extends Model
 {
     use HasFactory;
 
@@ -27,4 +30,5 @@ class event extends Model
     {
         return $this->belongsTo(User::class);
     }
+
 }

@@ -41,18 +41,18 @@
                                 <textarea name="detail" class="form-control"> </textarea>
                             </div>
                             <div>
-                                <label for="admin_id">เลือก Admin ที่ดูแล</label>
-                                <select name="admin_id" class="form-control">
+                                <label for="admin_ids">เลือก Admin ที่ดูแล</label>
+                                <select name="admin_ids[]" id="admin_ids" class="form-control" multiple>
                                     @foreach($admins as $admin)
                                         <option value="{{ $admin->id }}">{{ $admin->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                        @error('admin_id')
-                        <div>
-                            <span class="text-danger">{{$message}}</span>
-                        </div>
-                        @enderror
+                            @error('admin_ids')
+                            <div class="my-2">
+                                <span class="text-danger">{{ $message }}</span>
+                            </div>
+                            @enderror
 
                             <input type="submit" value="บันทึก" class="btn btn-primary my-3 ">
                         </form>
@@ -74,11 +74,7 @@
                                     </td>
                                     <td>{{ $event->detail }}</td>
                                     <td>
-                                        {{--Debug: แสดง URL ที่สร้างขึ้น--}}
-                                        {{-- <p>URL: {{ route('eventpage', $event->id) }}</p>
-                                        <p>Event ID: {{ $event->id }}</p> --}}
                                         <a href="{{route('eventpage', $event->id) }}" class="btn btn-warning">รายละเอียดผังงาน</a>
-                                        {{-- <a href="{{route('editEvent', $event->id) }}" class="btn btn-warning">แก้ไข</a> --}}
                                         <a href="{{route('deleteEvent', $event->id) }}" class="btn btn-danger" onclick="return confirm('คุณต้องการลบผังงานนี้หรือไม่?')">ลบ</a>
                                     </td>
                                 </tr>

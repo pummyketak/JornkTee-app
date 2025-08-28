@@ -34,9 +34,9 @@
                             <a class="nav-link" onclick="applyColors()" href="{{route('view')}}" >หน้าหลัก</a>
                         </div>
 
-                        <div class="apply-container">
+                        {{-- <div class="apply-container">
                             <a class="nav-link" onclick="applyColors()" href="{{route('create')}}">สร้าง/แก้ไขแผนผัง</a>
-                        </div>
+                        </div> --}}
                     </ul>
 
                     <!-- Right Side Of Navbar -->

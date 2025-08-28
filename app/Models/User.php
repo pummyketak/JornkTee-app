@@ -6,7 +6,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Event;
 
+/**
+ * App\Models\User
+ *
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Event[] $managedEvents
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -59,30 +65,12 @@ class User extends Authenticatable
         return $this->type === 2; // เฉพาะ Super Admin เท่านั้น
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function managedEvents()
     {
         return $this->belongsToMany(Event::class, 'event_admins', 'admin_id', 'event_id');
     }
-
-
-    // public function scopeAdmins($query)
-    // {
-    //     return $query->where('type', 1); // Filter สำหรับผู้ใช้ที่เป็น Admin
-    // }
-
-    // public function scopeSuperAdmins($query)
-    // {
-    //     return $query->where('type', 2); // Filter สำหรับผู้ใช้ที่เป็น Super Admin
-    // }
-
-    // public function scopeRegularUsers($query)
-    // {
-    //     return $query->where('type', 0); // Filter สำหรับผู้ใช้ที่เป็น User ปกติ
-    // }
-
-    //  public function managedEvents()
-    // {
-    //     return $this->hasMany(Event::class, 'admin_id'); // Assuming 'admin_id' is the foreign key in the events table
-    // }
 
 }
