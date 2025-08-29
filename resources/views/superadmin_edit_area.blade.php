@@ -40,19 +40,47 @@
                         <label for="detail" style="font-size: 20px;">รายละเอียดผังงาน</label>
                         <textarea name="detail" class="form-control">{{ $event->detail }}</textarea>
                     </div>
-                    <div class="form-group">
-                        <label for="admins">Assign Admins</label>
-                        <select name="admins[]" id="admins" class="form-control" multiple>
-                            @foreach($allAdmins as $admin)
-                                <option value="{{ $admin->id }}" @if(in_array($admin->id, $assignedAdmins)) selected @endif>
-                                    {{ $admin->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
                     <input type="submit" value="อัพเดท" class="btn btn-primary my-3">
                     <a href="{{ route('eventpage',$event->id) }}" class="btn btn-danger" onclick="return confirm('คุณต้องการยกเลิกการอัพเดทข้อมูลผังงานใช่หรือไม่ ?')">ยกเลิก</a>
                 </form>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header" style="font-size: 25px;">{{ __('จัดการผู้ดูแล') }}</div>
+                <div class="card-body">
+
+                    <form method="POST" action="{{ route('addAdminToEvent', $event->id) }}">
+                        @csrf
+                        <div class="form-group">
+                            <label for="admin_ids" style="font-size: 20px;">เลือก Admin ที่ดูแล</label>
+                            <select name="admin_ids[]" id="admin_ids" class="form-control" multiple>
+                                @foreach($admins as $admin)
+                                    <option value="{{ $admin->id }}">{{ $admin->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @error('admin_ids')
+                        <div class="my-2">
+                            <span class="text-danger">{{ $message }}</span>
+                        </div>
+                        @enderror
+                        <input type="submit" value="เพิ่มผู้ดูแล" class="btn btn-success my-3">
+                    </form>
+
+                    <h5 style="font-size: 20px;">รายชื่อผู้ดูแลปัจจุบัน:</h5>
+                    <ul>
+                        @foreach ($event->admins as $admin)
+                            <li>
+                                {{ $admin->name }} ({{ $admin->email }})
+                                <form method="POST" action="{{ route('removeAdminFromEvent', $event->id) }}" style="display: inline;">
+                                    @csrf
+                                    <input type="hidden" name="admin_id" value="{{ $admin->id }}">
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('คุณต้องการลบผู้ดูแลคนนี้หรือไม่?')">ลบ</button>
+                                </form>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

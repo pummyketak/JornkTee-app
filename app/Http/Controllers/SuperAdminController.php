@@ -133,7 +133,8 @@ class SuperAdminController extends Controller
     public function editEvent($id)
     {
         $event = event::find($id);
-        return view('superadmin_edit_area', compact('event'));
+        $admins = User::where('type', 1)->get();
+        return view('superadmin_edit_area', compact('event', 'admins'));
     }
 
     public function updateEvent(Request $request, $id)
@@ -173,16 +174,17 @@ class SuperAdminController extends Controller
     public function addAdminToEvent(Request $request, $id)
     {
         $request->validate([
-            'admin_id' => 'required|exists:users,id', // ตรวจสอบว่า admin_id มีอยู่ในระบบ
+            'admin_ids' => 'required|array', // ตรวจสอบว่า admin_ids เป็น array
+            'admin_ids.*' => 'exists:users,id', // ตรวจสอบว่า admin_ids มีอยู่ในตาราง users
         ]);
 
         $event = Event::findOrFail($id);
 
         // ป้องกันการเพิ่ม Admin ซ้ำ
-        if ($event->admins()->where('id', $request->admin_id)->exists()) {
+        if ($event->admins()->where('users.id', $request->admin_id)->exists()) {
             return redirect()->back()->with('error', 'Admin นี้ถูกเพิ่มใน Event แล้ว');
         }
-        $event->admins()->attach($request->admin_id);
+        $event->admins()->syncWithoutDetaching($request->admin_ids);
         return redirect()->back()->with('success', 'เพิ่ม Admin สำเร็จ');
     }
 
@@ -194,9 +196,10 @@ class SuperAdminController extends Controller
 
         $event = Event::findOrFail($id);
 
-        if (!$event->admins()->where('id', $request->admin_id)->exists()) {
+        if (!$event->admins()->where('event_admins.admin_id', $request->admin_id)->exists()) {
             return redirect()->back()->with('error', 'Admin นี้ไม่ได้ดูแล Event นี้');
         }
+
         $event->admins()->detach($request->admin_id);
         return redirect()->back()->with('success', 'ลบ Admin สำเร็จ');
     }
