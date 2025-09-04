@@ -36,11 +36,8 @@ class AdminController extends Controller
 
     public function view()
     {
-        $storelayout=Storelayout::orderBy('areanumber')->get();
-        $Bankaccount=Bankaccount::get();
-        $events = event::all();
-        $Image=Image::get();
-        return view('view',compact('storelayout','Bankaccount','events','Image'));
+        $events = Auth::user()->managedEvents ?? [];
+        return view('view',compact('events'));
     }
 
     public function insert(REquest $request, $eventId)
@@ -89,22 +86,34 @@ class AdminController extends Controller
 
     public function delete($id)
     {
-        Storelayout::find($id)->delete();
-        return redirect()->back();
+        $storelayout = Storelayout::where('id', $id)->whereHas('event', function ($query) {
+            $query->whereIn('id', Auth::user()->manageEvents()->pluck('id'));
+        })->first();
+
+        if (!$storelayout) {
+            return redirect()->back()->with('error', 'คุณไม่มีสิทธิ์ลบข้อมูลล็อคนี้');
+        }
+        $storelayout->delete();
+        return redirect()->back()->with('success', 'ข้อมูลล็อคถูกลบเรียบร้อยแล้ว');
     }
 
     public function change($id)
     {
-        $status=Storelayout::find($id);
-        $data=[
-            'status'=>!$status->status,
-            'confirmbooking'=> true,
-            'useridbooking'=> 0,
-            'nameuserbooking'=> '',
-            'storedetail'=> '',
+        $storelayout = Storelayout::where('id', $id)->whereHas('event', function ($query) {
+            $query->whereIn('id', Auth::user()->manageEvents()->pluck('id'));
+        })->first();
+
+        if (!$storelayout) {
+            return redirect()->back()->with('error', 'คุณไม่มีสิทธิ์เปลี่ยนสถานะล็อคนี้');
+        }
+        $storelayout->update([
+            'status' => !$storelayout->status,
+            'confirmbooking' => true,
+            'useridbooking' => 0,
+            'nameuserbooking' => '',
+            'storedetail' => '',
             'image_path' => null,
-        ];
-        Storelayout::find($id)->update($data);
+        ]);
         return redirect('/admin/create');
     }
 
@@ -148,18 +157,25 @@ class AdminController extends Controller
 
     }
 
-    public function addbankaccount(REquest $request)
+    public function addbankaccount(Request $request, $eventId)
     {
+        $event = Auth::user()->manageEvents()->find($eventId);
+        if (!$event) {
+            return redirect()->back()->with('error', 'คุณไม่มีสิทธิ์เพิ่มบัญชีธนาคารสำหรับ Event นี้');
+        }
+
         $request->validate(
             [
-                'addbankaccount'=>'required',
+                'addbankaccount' => 'required',
             ],
             [
-                'addbankaccount.required'=>'***กรุณาใส่หมายเลขบัญชี',
+                'addbankaccount.required' => '***กรุณาใส่หมายเลขบัญชี',
             ]
         );
-        $data=[
-            'bankaccount'=>$request->addbankaccount,
+
+        $data = [
+            'bankaccount' => $request->addbankaccount,
+            'event_id' => $eventId, // เชื่อมโยงกับ event
         ];
         Bankaccount::insert($data);
         return redirect('/admin/create');
@@ -167,13 +183,23 @@ class AdminController extends Controller
 
     public function deletebank($id)
     {
-        Bankaccount::find($id)->delete();
-        return redirect()->back();
+        $bankaccount = Bankaccount::where('id', $id)->whereHas('event', function ($query) {
+            $query->whereIn('id', Auth::user()->manageEvents()->pluck('id'));
+        })->first();
+
+        if (!$bankaccount) {
+            return redirect()->back()->with('error', 'คุณไม่มีสิทธิ์ลบบัญชีธนาคารนี้');
+        }
+        $bankaccount->delete();
+        return redirect()->back()->with('success', 'ลบข้อมูลบัญชีธนาคารของ Event: ' . $bankaccount->event->name . ' สำเร็จ');
     }
 
     public function confirmbooking($id)
     {
         $status=Storelayout::find($id);
+        if (!$status) {
+            return redirect()->back()->with('error', 'ไม่พบข้อมูลล็อคที่ต้องการยืนยันการจอง');
+        }
         $data=[
             'confirmbooking'=>!$status->confirmbooking,
         ];
@@ -181,32 +207,38 @@ class AdminController extends Controller
         return redirect('/admin/create');
     }
 
-    public function adminuploadimage(Request $request)
+    public function adminuploadimage(Request $request, $eventId)
     {
+        $event = Auth::user()->manageEvents()->find($eventId);
+        if (!$event) {
+            return back()->with('error', 'คุณไม่มีสิทธิ์อัปโหลดรูปภาพสำหรับ Event นี้');
+        }
+
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg|max:2048', // ตรวจสอบข้อกำหนดของไฟล์ภาพ
         ]);
 
-        if (Image::exists()) {
-            return back()->with('error', 'มีรูปอยู่แล้ว ไม่สามารถอัปโหลดรูปได้');
-        }
-
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imageName = time().'.'.$image->extension(); // สร้างชื่อไฟล์ใหม่โดยใช้ timestamp
-            $image->move(public_path('images'), $imageName); // ย้ายไฟล์ภาพไปยังโฟลเดอร์ public/images
+            $imageName = time() . '.' . $image->extension();
+            $image->move(public_path('images'), $imageName);
 
-            // บันทึกที่อยู่ของไฟล์ภาพลงในฐานข้อมูล
-            Image::create(['image_path' => 'images/'.$imageName]);
-            return back()->with('success','อัปโหลดรูปภาพสำเร็จ');
+            Image::create([
+                'image_path' => 'images/' . $imageName,
+                'event_id' => $eventId,
+            ]);
+            return back()->with('success', 'อัปโหลดรูปภาพสำเร็จ');
         }
     }
 
     public function admindeleteimage($id)
     {
-        $image = Image::find($id);
+        $image = Image::where('id', $id)->whereHas('event', function ($query) {
+            $query->whereIn('id', Auth::user()->manageEvents()->pluck('id'));
+        })->first();
+
         if (!$image) {
-            return back()->with('error', 'ไม่พบรูปภาพที่ต้องการลบ');
+            return back()->with('error', 'คุณไม่มีสิทธิ์ลบรูปภาพนี้');
         }
 
         // ตรวจสอบว่าไฟล์ภาพมีอยู่ในโฟลเดอร์หรือไม่
@@ -218,14 +250,14 @@ class AdminController extends Controller
 
         // ลบข้อมูลของภาพจากฐานข้อมูล
         $image->delete();
-        return redirect()->back()->with('success', 'ลบรูปภาพสำเร็จ');
+        return redirect()->back()->with('success', 'ลบข้อมูลรูปภาพของ Event: ' . $image->event->name . ' สำเร็จ');
     }
 
-    public function myEvents()
-    {
-        $events = Auth::user()->events; // Assuming a many-to-many relationship between User and Event
-        return view('admin.events', compact('events'));
+    // public function myEvents()
+    // {
+    //     $events = Auth::user()->events; // Assuming a many-to-many relationship between User and Event
+    //     return view('admin.events', compact('events'));
 
-    }
+    // }
 
 }

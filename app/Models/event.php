@@ -31,4 +31,14 @@ class Event extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function bankaccounts()
+    {
+        return $this->hasMany(Bankaccount::class);
+    }
+
+    public function images()
+    {
+        return $this->hasMany(Image::class);
+    }
+
 }

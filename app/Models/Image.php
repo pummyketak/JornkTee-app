@@ -12,4 +12,8 @@ class Image extends Model
     [
         'image_path',
     ];
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
 }

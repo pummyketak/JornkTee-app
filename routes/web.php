@@ -24,15 +24,15 @@ Route::get('/', function () {
 Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/create', [AdminController::class,'create'])->name('create');
     Route::get('/view', [AdminController::class,'view'])->name('view');
-    Route::post('/insert',[AdminController::class,'insert'])->name('insert');
+    Route::post('/insert/{eventId}',[AdminController::class,'insert'])->name('insert');
     Route::get('/delete/{id}', [AdminController::class,'delete'])->name('delete');
     Route::get('/change/{id}', [AdminController::class,'change'])->name('change');
     Route::get('/edit/{id}', [AdminController::class,'edit'])->name('edit');
     Route::post('/update/{id}',[AdminController::class,'update'])->name('update');
-    Route::post('/addbankaccount',[AdminController::class,'addbankaccount'])->name('addbankaccount');
+    Route::post('/addbankaccount/{eventId}',[AdminController::class,'addbankaccount'])->name('addbankaccount');
     Route::get('/confirmbooking/{id}', [AdminController::class,'confirmbooking'])->name('confirmbooking');
     Route::get('/deletebank/{id}', [AdminController::class,'deletebank'])->name('deletebank');
-    Route::post('/adminuploadimage', [AdminController::class,'adminuploadimage'])->name('adminuploadimage');
+    Route::post('/adminuploadimage/{eventId}', [AdminController::class,'adminuploadimage'])->name('adminuploadimage');
     Route::get('/admindeleteimage/{id}',[AdminController::class,'admindeleteimage'])->name('admindeleteimage');
 });
 
