@@ -15,7 +15,7 @@
                         <label> อัปโหลดรูป </label>
                     </div>
                     <div class="text-center">
-                        <form action="{{ route('adminuploadimage') }}" method="post" enctype="multipart/form-data">
+                        <form action="{{ route('adminuploadimage', ['eventId' => $event->id]) }}" method="post" enctype="multipart/form-data">
                             @csrf
                             <input type="file" name="image">
                             <button type="submit" class="btn btn-primary">Upload</button>
@@ -29,7 +29,7 @@
                     @endforeach
                     </div>
                 <hr>
-                    <form method="POST" action="{{ route('insert') }}">
+                    <form method="POST" action="{{ route('insert',['eventId' => $event->id]) }}">
                         @csrf
                         <div class="form-group">
                             <label for="areanumber" style="font-size: 25px;">หมายเลขล็อค</label>
@@ -74,7 +74,7 @@
                         <input type="submit" value="บันทึก" class="btn btn-primary my-3 ">
                     </form>
                 <hr>
-                    <form action="{{ route('addbankaccount')}}" method="post">
+                    <form action="{{ route('addbankaccount', ['eventId' => $event->id]) }}" method="post">
                         @csrf
                         <div>
                             <label for="addbankaccount" style="font-size: 25px;">เลขที่บัญชีที่ให้ผู้จองโอนเงิน</label>

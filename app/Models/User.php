@@ -70,7 +70,8 @@ class User extends Authenticatable
      */
     public function managedEvents()
     {
-        return $this->belongsToMany(Event::class, 'event_admins', 'admin_id', 'event_id');
+        return $this->belongsToMany(Event::class, 'event_admins', 'admin_id', 'event_id')
+                    ->select('events.id as id', 'events.plan_number', 'events.detail', 'events.eventstart_date', 'events.eventend_date'); // ใช้ alias เพื่อหลีกเลี่ยงความกำกวม
     }
 
 }

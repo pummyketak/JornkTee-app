@@ -68,20 +68,26 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($events as $event)
-                                <tr>
-                                    <td>{{ $event->plan_number }}</td>
-                                    <td>
-                                        {{ \Carbon\Carbon::parse($event->eventstart_date)->format('d/m/Y') }} -
-                                        {{ \Carbon\Carbon::parse($event->eventend_date)->format('d/m/Y') }}
-                                    </td>
-                                    <td>{{ $event->detail }}</td>
-                                    <td>
-                                        <a href="{{route('create')}}" class="btn btn-warning">ดูรายละเอียด</a>
-                                        {{-- <a href="" class="btn btn-danger" onclick="return confirm('คุณต้องการลบผังงานนี้หรือไม่?')">ลบ</a> --}}
-                                    </td>
+                            @if ($events && count($events) > 0)
+                                @foreach ($events as $event)
+                                    <tr>
+                                        <td>{{ $event->plan_number }}</td>
+                                        <td>
+                                            {{ \Carbon\Carbon::parse($event->eventstart_date)->format('d/m/Y') }} -
+                                            {{ \Carbon\Carbon::parse($event->eventend_date)->format('d/m/Y') }}
+                                        </td>
+                                        <td>{{ $event->detail }}</td>
+                                        <td>
+                                            <a href="{{route('create', ['eventId' => $event->id])}}" class="btn btn-warning">ดูรายละเอียด</a>
+                                            {{-- <a href="" class="btn btn-danger" onclick="return confirm('คุณต้องการลบผังงานนี้หรือไม่?')">ลบ</a> --}}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr class="text-center">
+                                    <td colspan="4">ไม่มี Event ที่ต้องดูแล 😊</td>
                                 </tr>
-                            @endforeach
+                            @endif
                         </tbody>
                     </table>
                 </div>

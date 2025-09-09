@@ -27,22 +27,25 @@ class AdminController extends Controller
         return view('view',compact('storelayout','Bankaccount','Image'));
     }
 
-    public function create()
-    {   $storelayout = Storelayout::orderBy('areanumber')->get();
-        $Bankaccount=Bankaccount::get();
-        $Image=Image::get();
-        return view('create',compact('storelayout','Bankaccount','Image'));
+    public function create($eventId)
+    {
+        $event = Event::findOrFail($eventId);
+        $storelayout = Storelayout::where('event_id', $eventId)->orderBy('areanumber')->get();
+        $Bankaccount=Bankaccount::where('event_id', $eventId)->get();
+        $Image=Image::where('event_id', $eventId)->get();
+        return view('create',compact('storelayout','Bankaccount','Image','event'));
     }
 
     public function view()
     {
-        $events = Auth::user()->managedEvents ?? [];
+        // $events = Event::all();
+        $events = Auth::user()->managedEvents; // ดึงเฉพาะ Event ที่ admin ถูกแต่งตั้งให้ดูแล
         return view('view',compact('events'));
     }
 
     public function insert(REquest $request, $eventId)
     {
-        $event = Auth::user()->manageEvents()->find($eventId);
+        $event = Auth::user()->managedEvents()->find($eventId);
         if (!$event) {
             return redirect()->back()->with('error', 'คุณไม่มีสิทธิ์จัดการ Event นี้');
         }
@@ -81,7 +84,7 @@ class AdminController extends Controller
             'event_id' => $eventId,
         ];
         Storelayout::insert($data);
-        return redirect('/admin/create')->with('success', 'ข้อมูลล็อคถูกเพิ่มเรียบร้อยแล้ว');
+        return redirect()->back()->with('success', 'ข้อมูลล็อคถูกเพิ่มเรียบร้อยแล้ว');
     }
 
     public function delete($id)
@@ -159,7 +162,7 @@ class AdminController extends Controller
 
     public function addbankaccount(Request $request, $eventId)
     {
-        $event = Auth::user()->manageEvents()->find($eventId);
+        $event = Auth::user()->managedEvents()->find($eventId);
         if (!$event) {
             return redirect()->back()->with('error', 'คุณไม่มีสิทธิ์เพิ่มบัญชีธนาคารสำหรับ Event นี้');
         }
@@ -178,13 +181,13 @@ class AdminController extends Controller
             'event_id' => $eventId, // เชื่อมโยงกับ event
         ];
         Bankaccount::insert($data);
-        return redirect('/admin/create');
+        return redirect()->back()->with('success', 'เพิ่มข้อมูลบัญชีธนาคารของ Event: ' . $event->name . ' สำเร็จ');
     }
 
     public function deletebank($id)
     {
         $bankaccount = Bankaccount::where('id', $id)->whereHas('event', function ($query) {
-            $query->whereIn('id', Auth::user()->manageEvents()->pluck('id'));
+            $query->whereIn('id', Auth::user()->managedEvents()->pluck('id'));
         })->first();
 
         if (!$bankaccount) {
@@ -209,7 +212,7 @@ class AdminController extends Controller
 
     public function adminuploadimage(Request $request, $eventId)
     {
-        $event = Auth::user()->manageEvents()->find($eventId);
+        $event = Auth::user()->managedEvents()->find($eventId);
         if (!$event) {
             return back()->with('error', 'คุณไม่มีสิทธิ์อัปโหลดรูปภาพสำหรับ Event นี้');
         }
@@ -233,22 +236,19 @@ class AdminController extends Controller
 
     public function admindeleteimage($id)
     {
-        $image = Image::where('id', $id)->whereHas('event', function ($query) {
-            $query->whereIn('id', Auth::user()->manageEvents()->pluck('id'));
+        $eventIds = Auth::user()->managedEvents()->pluck('id')->toArray(); // ดึง id ของ Event และแปลงเป็น array
+        $image = Image::where('id', $id)->whereHas('event', function ($query) use ($eventIds) {
+            $query->whereIn('id', $eventIds); // ใช้ id โดยตรงเพื่อหลีกเลี่ยงความกำกวม
         })->first();
 
         if (!$image) {
             return back()->with('error', 'คุณไม่มีสิทธิ์ลบรูปภาพนี้');
         }
 
-        // ตรวจสอบว่าไฟล์ภาพมีอยู่ในโฟลเดอร์หรือไม่
         $imagePath = public_path($image->image_path);
         if (file_exists($imagePath)) {
-            // ลบไฟล์ภาพ
             unlink($imagePath);
         }
-
-        // ลบข้อมูลของภาพจากฐานข้อมูล
         $image->delete();
         return redirect()->back()->with('success', 'ลบข้อมูลรูปภาพของ Event: ' . $image->event->name . ' สำเร็จ');
     }

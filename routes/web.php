@@ -22,7 +22,7 @@ Route::get('/', function () {
 
 //Route สำหรับ Admin
 Route::middleware(['auth'])->prefix('admin')->group(function () {
-    Route::get('/create', [AdminController::class,'create'])->name('create');
+    Route::get('/create/{eventId}', [AdminController::class,'create'])->name('create');
     Route::get('/view', [AdminController::class,'view'])->name('view');
     Route::post('/insert/{eventId}',[AdminController::class,'insert'])->name('insert');
     Route::get('/delete/{id}', [AdminController::class,'delete'])->name('delete');

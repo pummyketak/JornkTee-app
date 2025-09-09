@@ -11,6 +11,7 @@ class Image extends Model
     protected $fillable=
     [
         'image_path',
+        'event_id',
     ];
     public function event()
     {
